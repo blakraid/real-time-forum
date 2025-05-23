@@ -1,0 +1,240 @@
+/* Chat Container Styles */
+#chatapp {
+  max-width: 900px;
+  margin: 0 auto;
+  background-color: #fff;
+  border-radius: 12px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+  padding: 20px;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  position: relative;
+}
+
+#chatapp h2 {
+  color: #2c3e50;
+  margin-bottom: 20px;
+  font-weight: 600;
+  font-size: 1.5rem;
+  border-bottom: 1px solid #edf2f7;
+  padding-bottom: 15px;
+}
+
+#chatapp h3 {
+  color: #2c3e50;
+  font-size: 1.2rem;
+  margin: 15px 0 10px;
+  font-weight: 500;
+}
+
+/* Chat Display Area */
+#chat {
+  display: flex;
+  flex-direction: column-reverse;
+  height: 400px;
+  border-radius: 8px;
+  background-color: #f8fafc;
+  padding: 15px;
+  overflow-y: auto;
+  margin-bottom: 15px;
+  border: 1px solid #e2e8f0;
+  gap: 10px;
+}
+
+/* Message Styles */
+.message {
+  padding: 10px 14px;
+  border-radius: 18px;
+  max-width: 70%;
+  word-wrap: break-word;
+  margin-bottom: 5px;
+  font-size: 0.95rem;
+  line-height: 1.4;
+  animation: fadeIn 0.3s ease;
+}
+
+.message strong {
+  font-weight: 600;
+  font-size: 0.85rem;
+}
+
+.message small {
+  font-size: 0.7rem;
+  opacity: 0.7;
+  display: block;
+  margin-top: 6px;
+  text-align: right;
+}
+
+.sent {
+  align-self: flex-end;
+  background-color: #3b82f6;
+  color: white;
+  border-bottom-right-radius: 4px;
+  box-shadow: 0 2px 5px rgba(59, 130, 246, 0.2);
+}
+
+.received {
+  align-self: flex-start;
+  background-color: #e2e8f0;
+  color: #1e293b;
+  border-bottom-left-radius: 4px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+}
+
+/* Input Area */
+#messageInput {
+  width: calc(100% - 100px);
+  padding: 12px 16px;
+  border-radius: 24px;
+  border: 1px solid #cbd5e1;
+  font-size: 0.95rem;
+  outline: none;
+  transition: border 0.2s, box-shadow 0.2s;
+}
+
+#messageInput:focus {
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.25);
+}
+
+#messageInput::placeholder {
+  color: #94a3b8;
+}
+
+#sendmsg {
+  margin-top: 10px;
+  width: 80px;
+  margin-left: 10px;
+  background-color: #3b82f6;
+  color: white;
+  border: none;
+  border-radius: 24px;
+  padding: 12px 0;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+#sendmsg:hover {
+  background-color: #2563eb;
+}
+
+/* Fix for Close Button */
+#close {
+  padding: 5px 10px;
+  background-color: #ef4444;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  font-size: 14px;
+  cursor: pointer;
+  transition: background-color 0.2s;
+  position: absolute;
+  top: 20px;
+  right: 20px;
+}
+
+#close:hover {
+  background-color: #dc2626;
+}
+
+/* User List Styles */
+#user-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  max-height: 200px;
+  overflow-y: auto;
+}
+
+#user-list li {
+  padding: 10px 15px;
+  margin-bottom: 5px;
+  background-color: #f1f5f9;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background-color 0.2s;
+  display: flex;
+  align-items: center;
+}
+
+#user-list li:hover {
+  background-color: #e2e8f0;
+}
+
+.user-list li::before {
+  content: "";
+  display: inline-block;
+  width: 8px;
+  height: 8px;
+  background-color: #414141;
+  border-radius: 50%;
+  margin-right: 8px;
+}
+
+.online::before {
+  content: "";
+  display: inline-block;
+  width: 8px;
+  height: 8px;
+  background-color: #00ff00 !important;
+  border-radius: 50%;
+  margin-right: 8px;
+}
+
+.new-msg-badge {
+  background-color: #ff4d4f;
+  color: white;
+  padding: 2px 6px;
+  border-radius: 12px;
+  font-size: 0.75rem;
+  margin-left: 8px;
+  animation: pulse 1s infinite;
+}
+
+@keyframes pulse {
+  0% { transform: scale(1); opacity: 1; }
+  50% { transform: scale(1.1); opacity: 0.7; }
+  100% { transform: scale(1); opacity: 1; }
+}
+
+#typing{
+  color: #00ff00;
+}
+
+/* Animations */
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  #messageInput {
+    width: calc(100% - 80px);
+  }
+  
+  #sendmsg {
+    width: 70px;
+  }
+  
+  .message {
+    max-width: 85%;
+  }
+}
+
+@media (max-width: 480px) {
+  #chat {
+    height: 300px;
+  }
+  
+  #messageInput {
+    width: calc(100% - 70px);
+    padding: 10px 14px;
+  }
+  
+  #sendmsg {
+    width: 60px;
+    padding: 10px 0;
+  }
+}

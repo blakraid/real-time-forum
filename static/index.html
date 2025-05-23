@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Forum & Chat</title>
+    <link rel="stylesheet" href="/badr/css/chat.css" />
+    <link rel="stylesheet" href="/badr/css/login.css" />
+    <link rel="stylesheet" href="/badr/css/style.css" />
+</head>
+<body>
+    <header class="header">
+        <div class="div_header">
+            <img src="/badr/img/logo.png" alt="Logo">
+            <a href="#" class="logo">FORUM & CHAT</a>
+        </div>
+        <div class="auth-icon">
+            <button class="auth-button" id="logoutButton">🚪 Logout</button>
+            <button class="auth-button" id="loginToggle">Login</button>
+        </div>
+    </header>
+
+    <div class="main-container">
+        <div class="forum-view active-view" id="forumView">
+            <div class="container" id="container" style="display: none;"></div>
+            <div id="homepage" class="homepage" style="display: none;">
+                <div id="container1" class="container1" style="display: none;"></div>
+            </div>
+        </div>
+
+        <div class="chat-view" id="chatView">
+            <div id="chatapp"></div>
+        </div>
+    </div>
+
+    <noscript>
+        <div class="noscript-message">
+            <p>JavaScript is disabled in your browser. Please enable JavaScript to view the posts.</p>
+        </div>
+    </noscript>
+
+    <script type="module" src="/badr/js/index.js"></script>
+</body>
+</html>
