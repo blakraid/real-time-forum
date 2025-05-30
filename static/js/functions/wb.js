@@ -198,12 +198,35 @@ async function sendMessage() {
 export async function fetchUserName(user = userId) {
     const response = await fetch(`/users?username=${user}`)
     const Json = await response.json()
-    allUsers = Json;
+    console.log(Json);
+    
+    allUsers = getAllUsersStorted(Json);
     showAllUsers();
 
 }
 
+function getAllUsersStorted(users) {
+    let x = users.sort((a, b) => {
+        const aHasDate = a.Date.Valid;
+        const bHasDate = b.Date.Valid;
+    
+        if (aHasDate && bHasDate) {
+          
+          const dateA = new Date(a.Date.String);
+          const dateB = new Date(b.Date.String);
+          return dateB - dateA;
+        }
+    
+        if (aHasDate) return -1;
+        if (bHasDate) return 1;
+    
+        return a.Username.localeCompare(b.Username);
+      });
 
+      
+      
+      return x.map(x1 => x1.Username)
+}
 
 document.getElementById("logoutButton").addEventListener("click", async () => {
     const response = await fetch("/logout")

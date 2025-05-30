@@ -36,13 +36,7 @@ func RegesterHandler(w http.ResponseWriter, r *http.Request) {
 	username := tools.EscapeString(r.FormValue("username"))
 	FirtsName := strings.ToLower(tools.EscapeString(r.FormValue("FirtsName")))
 	LastName := strings.ToLower(tools.EscapeString(r.FormValue("LastName")))
-	age , err := strconv.Atoi(tools.EscapeString(r.FormValue("age")))
-	if err != nil {
-		w.WriteHeader(http.StatusBadRequest)
-		response = map[string]string{"message": "invalid age"}
-		json.NewEncoder(w).Encode(response)
-		return
-	}
+	
 	gender := strings.ToLower(tools.EscapeString(r.FormValue("gender")))
 
 	err1 := validotherdata(FirtsName,LastName,gender)
@@ -53,14 +47,22 @@ func RegesterHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	age , err := strconv.Atoi(tools.EscapeString(r.FormValue("age")))
+	if err != nil {
+		w.WriteHeader(http.StatusBadRequest)
+		response = map[string]string{"message": "invalid age"}
+		json.NewEncoder(w).Encode(response)
+		return
+	}
+
 
 	email := tools.EscapeString(r.FormValue("email"))
 	password := tools.EscapeString(r.FormValue("password"))
 
-	_, valid := ValidateInput(username, email, password)
+	error, valid := ValidateInput(username, email, password)
 	if !valid {
 		w.WriteHeader(http.StatusBadRequest)
-		response := map[string]string{"message": "Password or mail is wrong"}
+		response := map[string]string{"message": error}
 		json.NewEncoder(w).Encode(response)
 		return
 	}
@@ -113,38 +115,38 @@ func RegesterHandler(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(response)
 }
 
-func ValidateInput(username, email, password string) (map[string]string, bool) {
-	errors := make(map[string]string)
+func ValidateInput(username, email, password string) (string, bool) {
+	errors := ""
 
 	const maxUsername = 50
 	const maxEmail = 100
 	const maxPassword = 100
 
 	if len(username) == 0 {
-		errors["username"] = "Username cannot be empty"
+		errors = "Username cannot be empty"
 		return errors, false
 	} else if len(username) > maxUsername {
-		errors["username"] = fmt.Sprintf("Username cannot be longer than %d characters.", maxUsername)
+		errors = fmt.Sprintf("Username cannot be longer than %d characters.", maxUsername)
 		return errors, false
 	}
 
 	emailRegex := regexp.MustCompile(`^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$`)
 	if len(email) == 0 {
-		errors["email"] = "Email cannot be empty"
+		errors = "Email cannot be empty"
 		return errors, false
 	} else if len(email) > maxEmail {
-		errors["email"] = fmt.Sprintf("Email cannot be longer than %d characters.", maxEmail)
+		errors = fmt.Sprintf("Email cannot be longer than %d characters.", maxEmail)
 		return errors, false
 	} else if !emailRegex.MatchString(email) {
-		errors["email"] = "Invalid email format"
+		errors = "Invalid email format"
 		return errors, false
 	}
 
 	if len(password) < 8 {
-		errors["password"] = "Password must be at least 8 characters long"
+		errors = "Password must be at least 8 characters long"
 		return errors, false
 	} else if len(password) > maxPassword {
-		errors["password"] = fmt.Sprintf("Password cannot be longer than %d characters.", maxPassword)
+		errors = fmt.Sprintf("Password cannot be longer than %d characters.", maxPassword)
 		return errors, false
 	} else {
 		hasUpper := regexp.MustCompile(`[A-Z]`).MatchString(password)
@@ -153,16 +155,16 @@ func ValidateInput(username, email, password string) (map[string]string, bool) {
 		hasSpecial := regexp.MustCompile(`[\W_]`).MatchString(password)
 
 		if !hasUpper {
-			errors["password"] = "Password must include at least one uppercase letter"
+			errors = "Password must include at least one uppercase letter"
 			return errors, false
 		} else if !hasLower {
-			errors["password"] = "Password must include at least one lowercase letter"
+			errors = "Password must include at least one lowercase letter"
 			return errors, false
 		} else if !hasDigit {
-			errors["password"] = "Password must include at least one digit"
+			errors = "Password must include at least one digit"
 			return errors, false
 		} else if !hasSpecial {
-			errors["password"] = "Password must include at least one special character"
+			errors = "Password must include at least one special character"
 			return errors, false
 		}
 	}
@@ -171,7 +173,7 @@ func ValidateInput(username, email, password string) (map[string]string, bool) {
 		log.Println(errors)
 		return errors, false
 	}
-	return nil, true
+	return "", true
 }
 
 
@@ -183,6 +185,9 @@ func validotherdata(firstname , lastname,gander string) error{
 	}
 	if len(firstname) > 50 || len(lastname) > 50{
 		return errors.New("first or last name is too long")
+	}
+	if len(firstname) <= 2 || len(lastname) <= 2{
+		return errors.New("first or last name is too short")
 	}
 	if gander != "man" && gander != "women" {
 		return errors.New("invalid gander")

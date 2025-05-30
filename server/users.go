@@ -1,13 +1,18 @@
 package server
 
 import (
-	"database/sql"
+	 "database/sql"
 	"encoding/json"
 	"fmt"
 	"net/http"
 	"rtf/database"
 )
 
+type user struct{
+	Username string
+	Date sql.NullString
+	Content sql.NullString
+}
 func HandleUsers(w http.ResponseWriter, r *http.Request) {
 	_, err := r.Cookie("session_token")
 	if err != nil {
@@ -18,24 +23,40 @@ func HandleUsers(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	var allUsers []string
+	var allUsers []user
 	currentUsername := r.URL.Query().Get("username")
 
 	// Updated SQL: sort by last message timestamp, fallback to username
 	rows, err := database.Sql.Query(`
-	SELECT u.username, MAX(m.timestamp) AS last_msg_time
+	SELECT
+	u.username,
+	m.timestamp AS last_msg_time,
+	m.text AS last_msg_content
 	FROM users u
 	LEFT JOIN (
-		SELECT sender AS username, timestamp FROM messages
-		UNION ALL
-		SELECT receiver AS username, timestamp FROM messages
-	) m ON u.username = m.username
+	SELECT 
+		CASE 
+		WHEN sender = ? THEN receiver
+		ELSE sender
+		END AS other_user,
+		MAX(timestamp) AS timestamp
+	FROM messages
+	WHERE sender = ? OR receiver = ?
+	GROUP BY other_user
+	) lm ON u.username = lm.other_user
+	LEFT JOIN messages m ON 
+	((m.sender = u.username AND m.receiver = ?) OR
+	(m.receiver = u.username AND m.sender = ?))
+	AND m.timestamp = lm.timestamp
 	WHERE u.username != ?
-	GROUP BY u.username
-	ORDER BY 
-		CASE WHEN last_msg_time IS NULL THEN 1 ELSE 0 END,
-		last_msg_time DESC
-`, currentUsername)
+	ORDER BY
+	CASE WHEN lm.timestamp IS NULL THEN 1 ELSE 0 END,
+	lm.timestamp DESC,
+	u.username ASC;
+
+
+	`,currentUsername,currentUsername,currentUsername,currentUsername,currentUsername,currentUsername)
+
 	if err != nil {
 		http.Error(w, "Database query error", http.StatusInternalServerError)
 		fmt.Println("Query error:", err)
@@ -44,17 +65,16 @@ func HandleUsers(w http.ResponseWriter, r *http.Request) {
 	defer rows.Close()
 
 	for rows.Next() {
-		var username string
-		var lastMsgTime sql.NullString
-		if err := rows.Scan(&username, &lastMsgTime); err != nil {
+		var data user
+		if err := rows.Scan(&data.Username ,&data.Date,&data.Content); err != nil {
 			http.Error(w, "Database scan error", http.StatusInternalServerError)
 			fmt.Println("Scan error:", err)
 			return
 		}
-		if username == currentUsername {
+		if data.Username == currentUsername {
 			continue 
 		}
-		allUsers = append(allUsers, username)
+		allUsers = append(allUsers, data)
 	}
 
 	// Optionally log or debug
