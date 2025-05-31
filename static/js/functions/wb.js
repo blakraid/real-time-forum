@@ -35,7 +35,7 @@ function myThrottle(func, delay) {
       const now = Date.now();
       if (now - lastDate >= delay) {
         lastCall = now;
-        //func.apply();
+        func.apply();
       }
     };
   }
