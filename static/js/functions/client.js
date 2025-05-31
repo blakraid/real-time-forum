@@ -1,4 +1,5 @@
 const creatPost = `
+<span id="nameOfClient"></span>
 <form class="post-form" id="postForm">
   <h2>Create New Post</h2>
   <div class="form-group">
@@ -60,7 +61,7 @@ let allPosts = [];
 
 
 
-function clientPage() {
+function clientPage(username) {
   container.innerHTML = "";
   container.style.display = "none"
   loginBtn.style.display = "none";
@@ -70,6 +71,7 @@ function clientPage() {
   document.getElementById("container1").style.display = "block";
   document.getElementById("container1").innerHTML = creatPost;
   document.getElementById("homepage").style.display = "block"
+  document.getElementById("nameOfClient").innerHTML = `Welcome Back ${username}`
 
 
   document.getElementById("categoryFilter").addEventListener("change", function () {

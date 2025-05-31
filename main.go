@@ -11,14 +11,14 @@ import (
 
 
 func main(){
-	port := "8151"
+	port := "8163"
 	if err := database.CreateDatabase(); err != nil {
 		log.Fatal("Problem in Create database")
 	}
 
 	// File server
 	FileServer := http.FileServer(http.Dir("./static"))
-	http.Handle("/badr/",http.StripPrefix("/badr",FileServer))
+	http.Handle("/static/",http.StripPrefix("/static",FileServer))
 
 	// Content Home Page
 

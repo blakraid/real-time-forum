@@ -11,7 +11,6 @@ import (
 type user struct{
 	Username string
 	Date sql.NullString
-	Content sql.NullString
 }
 func HandleUsers(w http.ResponseWriter, r *http.Request) {
 	_, err := r.Cookie("session_token")
@@ -29,33 +28,22 @@ func HandleUsers(w http.ResponseWriter, r *http.Request) {
 	// Updated SQL: sort by last message timestamp, fallback to username
 	rows, err := database.Sql.Query(`
 	SELECT
-	u.username,
-	m.timestamp AS last_msg_time,
-	m.text AS last_msg_content
+		u.username,
+		m.timestamp
 	FROM users u
 	LEFT JOIN (
-	SELECT 
-		CASE 
-		WHEN sender = ? THEN receiver
-		ELSE sender
-		END AS other_user,
-		MAX(timestamp) AS timestamp
-	FROM messages
-	WHERE sender = ? OR receiver = ?
-	GROUP BY other_user
-	) lm ON u.username = lm.other_user
-	LEFT JOIN messages m ON 
-	((m.sender = u.username AND m.receiver = ?) OR
-	(m.receiver = u.username AND m.sender = ?))
-	AND m.timestamp = lm.timestamp
-	WHERE u.username != ?
-	ORDER BY
-	CASE WHEN lm.timestamp IS NULL THEN 1 ELSE 0 END,
-	lm.timestamp DESC,
-	u.username ASC;
-
-
-	`,currentUsername,currentUsername,currentUsername,currentUsername,currentUsername,currentUsername)
+		SELECT 
+			CASE 
+				WHEN sender = ? THEN receiver
+				ELSE sender
+			END AS other_user,
+			MAX(timestamp) AS timestamp
+		FROM messages
+		WHERE sender = ? OR receiver = ?
+		GROUP BY other_user
+	) m ON u.username = m.other_user
+	WHERE u.username != ?;
+	`,currentUsername,currentUsername,currentUsername,currentUsername,)
 
 	if err != nil {
 		http.Error(w, "Database query error", http.StatusInternalServerError)
@@ -66,7 +54,7 @@ func HandleUsers(w http.ResponseWriter, r *http.Request) {
 
 	for rows.Next() {
 		var data user
-		if err := rows.Scan(&data.Username ,&data.Date,&data.Content); err != nil {
+		if err := rows.Scan(&data.Username ,&data.Date); err != nil {
 			http.Error(w, "Database scan error", http.StatusInternalServerError)
 			fmt.Println("Scan error:", err)
 			return

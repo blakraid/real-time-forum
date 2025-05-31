@@ -13,7 +13,7 @@ document.addEventListener("DOMContentLoaded", async () =>{
         document.getElementById("homepage").style.display = "block"
         await fetchUserName(reJson.username)
         connect(reJson.username)
-        clientPage()
+        clientPage(reJson.username)
         loadPosts()
     }
 })

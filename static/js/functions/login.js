@@ -1,7 +1,7 @@
 import { clientPage,loadPosts } from "./client.js";
 import { connect , fetchUserName} from "./wb.js";
 
-const divLogin = `<img style="margin:9px 0 0 2%;display: none" id="img_close" class="img_close" src="/badr/img/icon_close.png" alt="ssssssssssss">
+const divLogin = `<img style="margin:9px 0 0 2%;display: none" id="img_close" class="img_close" src="/static/img/icon_close.png" alt="ssssssssssss">
      <div class="form-container sign-up">
        <div class="form" >
          <h1>Create Account</h1>

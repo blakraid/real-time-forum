@@ -29,21 +29,27 @@ document.getElementById("sendmsg").addEventListener("click", () => {
     sendMessage()
 })
 
-let lastDate = 0;
+let lastCall = 0;
 function myThrottle(func, delay) {
     return function () {
-      const now = Date.now();
-      if (now - lastDate >= delay) {
-        lastCall = now;
-        func.apply();
-      }
+        const now = Date.now();
+        if (now - lastCall >= delay) {
+            lastCall = now;
+            func.apply();
+        }
     };
-  }
+}
 
-load.addEventListener("scrollend", myThrottle(() => {
-    num += 10
-    loadMessages(num)
-},1000));
+load.addEventListener("scroll", myThrottle(() => {
+    if ((load.scrollTop *-1 + load.clientHeight ) >= load.scrollHeight*0.95){
+        num += 10
+        loadMessages(num)
+        
+    }
+
+    
+}, 10));
+
 
 
 
@@ -200,7 +206,7 @@ export async function fetchUserName(user = userId) {
     const response = await fetch(`/users?username=${user}`)
     const Json = await response.json()
     console.log(Json);
-    
+
     allUsers = getAllUsersStorted(Json);
     showAllUsers();
 
@@ -210,23 +216,23 @@ function getAllUsersStorted(users) {
     let x = users.sort((a, b) => {
         const aHasDate = a.Date.Valid;
         const bHasDate = b.Date.Valid;
-    
+
         if (aHasDate && bHasDate) {
-          
-          const dateA = new Date(a.Date.String);
-          const dateB = new Date(b.Date.String);
-          return dateB - dateA;
+
+            const dateA = new Date(a.Date.String);
+            const dateB = new Date(b.Date.String);
+            return dateB - dateA;
         }
-    
+
         if (aHasDate) return -1;
         if (bHasDate) return 1;
-    
-        return a.Username.localeCompare(b.Username);
-      });
 
-      
-      
-      return x.map(x1 => x1.Username)
+        return a.Username.localeCompare(b.Username);
+    });
+
+
+
+    return x.map(x1 => x1.Username)
 }
 
 document.getElementById("logoutButton").addEventListener("click", async () => {
@@ -245,8 +251,8 @@ document.getElementById("logoutButton").addEventListener("click", async () => {
 })
 
 inputText.addEventListener("input", () => {
-        if (inputText.value.length != 0) {
-            let msg = { type: "typing", receiver: selectedUser, text: "typing" };
-            socket.send(JSON.stringify(msg));
-        }
+    if (inputText.value.length != 0) {
+        let msg = { type: "typing", receiver: selectedUser, text: "typing" };
+        socket.send(JSON.stringify(msg));
+    }
 })
