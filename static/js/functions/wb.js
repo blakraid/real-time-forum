@@ -29,17 +29,21 @@ document.getElementById("sendmsg").addEventListener("click", () => {
     sendMessage()
 })
 
-let isFetching = false;
+let lastDate = 0;
+function myThrottle(func, delay) {
+    return function () {
+      const now = Date.now();
+      if (now - lastDate >= delay) {
+        lastCall = now;
+        //func.apply();
+      }
+    };
+  }
 
-
-load.addEventListener("scrollend", () => {
-    if (isFetching) return;
-
-
+load.addEventListener("scrollend", myThrottle(() => {
     num += 10
     loadMessages(num)
-    isFetching = true;
-});
+},1000));
 
 
 
@@ -140,7 +144,6 @@ function displayMessage(msg, type, isadd = false) {
 function loadMessages(num = 0) {
 
     if (!selectedUser) {
-        isFetching = false
         return
     };
 
@@ -148,7 +151,6 @@ function loadMessages(num = 0) {
         .then(res => res.json())
         .then(data => {
             if (data == null) {
-                isFetching = false
                 return
             }
             data.sort((a, b) => new Date(a.timestamp) - new Date(b.timestamp));
@@ -156,7 +158,6 @@ function loadMessages(num = 0) {
 
             //let chat = document.getElementById("chat");
             data.reverse().forEach(msg => displayMessage(msg, msg.sender === userId ? "sent" : "received"));
-            isFetching = false
         });
 }
 
