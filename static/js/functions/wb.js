@@ -94,7 +94,7 @@ export function connect(id) {
         } else {
             await fetchUserName()
             if (data.sender == selectedUser) {
-                displayMessage(data, data.sender === userId ? "sent" : "received", true);
+                startChat(data.sender)
             }
             document.getElementById(data.sender).innerHTML += `<span class="new-msg-badge">  New</span>`
             document.getElementById(data.sender).className = "online"
@@ -135,10 +135,23 @@ function updateUserList() {
 }
 
 function displayMessage(msg, type, isadd = false) {
+    const date = new Date(msg.timestamp);
+
+// Extract components
+    const day = date.getDate();
+    const month = date.getMonth()
+    const year = date.getFullYear();
+    const hours = date.getHours();
+    const minutes = date.getMinutes(); 
+
+    const pad = (n) => n.toString().padStart(2, '0');
+
+    const formatted = `${pad(day)}/${pad(month)}/${year} ${pad(hours)}:${pad(minutes)}`;
+
     let chat = document.getElementById("chat");
     let div = document.createElement("div");
     div.classList.add("message", type);
-    div.innerHTML = `<strong>${msg.sender}:</strong> ${msg.text} <br><small>${new Date(msg.timestamp).toLocaleTimeString()}</small>`;
+    div.innerHTML = `<strong>${msg.sender}:</strong> ${msg.text} <br><small>${formatted}</small>`;
     if (!isadd) {
         chat.appendChild(div);
     } else {

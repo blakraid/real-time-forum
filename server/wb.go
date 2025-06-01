@@ -77,7 +77,6 @@ func HandleConnection(w http.ResponseWriter, r *http.Request) {
 					err := conn.WriteJSON(msg)
 					if err != nil {
 						fmt.Println("Error sending to receiver:", err)
-						// Optionally handle connection cleanup here
 					}
 				}
 			}
