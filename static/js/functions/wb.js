@@ -65,10 +65,15 @@ export function connect(id) {
 
 
     socket.onmessage = async (event) => {
+        
         const data = JSON.parse(event.data);
+        console.log(data);
 
-
-        if (data.type === "userList") {
+        if(data.type == "msg"){
+            if (data.receiver == selectedUser) {
+                startChat(data.receiver)
+            }
+        }else if (data.type === "userList") {
             await fetchUserName();
             usersOnline = data.users
             updateUserList()
@@ -92,12 +97,14 @@ export function connect(id) {
                 typingElement.innerHTML = "";
             }, 4000);
         } else {
-            await fetchUserName()
+            await fetchUserName()            
             if (data.sender == selectedUser) {
                 startChat(data.sender)
             }
-            document.getElementById(data.sender).innerHTML += `<span class="new-msg-badge">  New</span>`
-            document.getElementById(data.sender).className = "online"
+            if(data.sender != userId){
+                document.getElementById(data.sender).innerHTML += `<span class="new-msg-badge">  New</span>`
+                document.getElementById(data.sender).className = "online"
+            }    
         }
     };
     socket.onclose = () => {
@@ -218,7 +225,6 @@ async function sendMessage() {
 export async function fetchUserName(user = userId) {
     const response = await fetch(`/users?username=${user}`)
     const Json = await response.json()
-    console.log(Json);
 
     allUsers = getAllUsersStorted(Json);
     showAllUsers();

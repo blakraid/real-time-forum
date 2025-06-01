@@ -124,7 +124,6 @@ function loginHundler(){
             body:formData
           })
           const Json = await response.json();
-          console.log(Json);
           
           if (!response.ok){
             showNotification(Json.message,"error")

@@ -49,6 +49,7 @@ func HandleConnection(w http.ResponseWriter, r *http.Request) {
 	clientsMu.Lock()
 	clients[userID] = append(clients[userID], conn)
 	clientsMu.Unlock()
+	
 
 	BroadcastUserList() // Notify all clients of new user
 
@@ -70,10 +71,20 @@ func HandleConnection(w http.ResponseWriter, r *http.Request) {
 				continue
 			}
 
-			// Send message to receiver if online
 			clientsMu.Lock()
 			if receiverConns, ok := clients[msg.Receiver]; ok {
 				for _, conn := range receiverConns {
+					err := conn.WriteJSON(msg)
+					if err != nil {
+						fmt.Println("Error sending to receiver:", err)
+					}
+				}
+			}
+			clientsMu.Unlock()
+			clientsMu.Lock()
+			msg.Type = "msg"
+			if my, ok := clients[userID]; ok {
+				for _, conn := range my {
 					err := conn.WriteJSON(msg)
 					if err != nil {
 						fmt.Println("Error sending to receiver:", err)
@@ -113,7 +124,6 @@ func GetMessages(w http.ResponseWriter, r *http.Request) {
 	WHERE (sender=? AND receiver=?) OR (sender=? AND receiver=?)
 	ORDER BY timestamp DESC LIMIT 10 OFFSET ?`, sender, receiver, receiver, sender, num)
 	if err != nil {
-		//	fmt.Println(sender + "  " + receiver)
 		http.Error(w, "DB error", 500)
 		return
 	}
@@ -153,3 +163,14 @@ func BroadcastUserList() {
 		}
 	}
 }
+
+
+// func BroadcastMySelf(msg Message){
+// 	usersJSON, _ := json.Marshal(map[string]interface{}{
+// 		"type":  "myWebSocket",
+// 		"msg": msg,
+// 	})
+// 		for _, conn1 := range clients[msg.Sender] {
+// 			conn1.WriteMessage(websocket.TextMessage, usersJSON)
+// 		}
+// }
