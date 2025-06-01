@@ -1,3 +1,6 @@
+import {showNotification} from './login.js'
+
+
 const creatPost = `
 <span id="nameOfClient"></span>
 <form class="post-form" id="postForm">
@@ -104,7 +107,7 @@ function initForm() {
 
     const selectedCategories = document.querySelectorAll('input[name="category"]:checked');
     if (selectedCategories.length === 0) {
-      alert("Please select at least one category.");
+      showNotification("Please select at least one category.", "error");
       return;
     }
 
@@ -121,16 +124,16 @@ function initForm() {
 
       if (!response.ok) {
         const data = await response.json();
-        alert(data.error || "An unknown error occurred.");
+        showNotification(data.error || "An unknown error occurred.", "error");
         return
       }
 
-      alert("Post submitted successfully!");
+      showNotification("Post submitted successfully!");
       form.reset();
       loadPosts();
     } catch (error) {
       console.error("Error:", error);
-      alert(error.message || "An error occurred while submitting the post.");
+      showNotification(error.message || "An error occurred while submitting the post.", "error");
     }
   });
 }
@@ -167,7 +170,7 @@ async function loadPosts() {
     loadMorePosts();
   } catch (error) {
     console.error("Error loading posts:", error);
-    alert("Failed to load posts: " + error.message);
+    showNotification("Failed to load posts: " + error.message,"error");
   }
 }
 
@@ -328,7 +331,7 @@ function submitLikeDislike({ postID = null, commentID = null, isLike }) {
       })
       .catch(error => {
         console.error("Error:", error);
-        alert("Something went wrong. Please try again.");
+        showNotification("Something went wrong. Please try again.", "error");
       })
       .finally(() => {
         likeBtn.disabled = false;
@@ -379,12 +382,12 @@ async function submitComment(event, postID) {
       body: formData,
     });
     //const result = await response.text();
-    alert("Comment submitted successfully!");
+    showNotification("Comment submitted successfully!");
     form.reset();
     addNewComment(postID);
   } catch (error) {
     console.error("Error submitting comment:", error);
-    alert("Failed to submit comment");
+    showNotification("Failed to submit comment","error");
   }
 }
 

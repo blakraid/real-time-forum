@@ -1,4 +1,4 @@
-import { loginPage, loginHundler } from './login.js'
+import { loginPage, loginHundler,showNotification } from './login.js'
 
 const chatdiv = `<h2>Chat App</h2>
 <button id="close" style="display: none;">close</button>
@@ -230,8 +230,6 @@ function getAllUsersStorted(users) {
         return a.Username.localeCompare(b.Username);
     });
 
-
-
     return x.map(x1 => x1.Username)
 }
 
@@ -239,7 +237,7 @@ document.getElementById("logoutButton").addEventListener("click", async () => {
     const response = await fetch("/logout")
     if (!response.ok) {
         const Json = await response.json();
-        alert(Json.message);
+        showNotification(Json.message, "error");
 
     } else {
         document.getElementById("container1").innerHTML = "";

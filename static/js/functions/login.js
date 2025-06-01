@@ -1,7 +1,7 @@
 import { clientPage,loadPosts } from "./client.js";
 import { connect , fetchUserName} from "./wb.js";
 
-const divLogin = `<img style="margin:9px 0 0 2%;display: none" id="img_close" class="img_close" src="/static/img/icon_close.png" alt="ssssssssssss">
+const divLogin = `<img style="margin:9px 0 0 2%;display: none" id="img_close" class="img_close" src="/static/img/icon_close.png" alt="Close">
      <div class="form-container sign-up">
        <div class="form" >
          <h1>Create Account</h1>
@@ -127,10 +127,10 @@ function loginHundler(){
           console.log(Json);
           
           if (!response.ok){
-            alert(Json.message)
+            showNotification(Json.message,"error")
             
           }else{
-            alert(Json.message)
+            showNotification(Json.message)
             document.getElementById("container").classList.remove("active")
           }
         }catch (error){
@@ -156,9 +156,9 @@ function loginHundler(){
         const Json = await response.json();
 
         if (!response.ok){
-          alert(Json.message)
+          showNotification(Json.message , "error")
         }else{
-          alert(Json.message)
+          showNotification(Json.message)
           clientPage()
           loadPosts()
           connect(Json.username)
@@ -167,4 +167,20 @@ function loginHundler(){
       })
 }
 
-export {loginPage,loginHundler}
+
+function showNotification(message, type = "success") {
+  const container = document.getElementById("notification-container");
+  const notification = document.createElement("div");
+  notification.className = `notification ${type}`;
+  notification.innerText = message;
+
+  container.appendChild(notification);
+
+  // Remove after 4 seconds
+  setTimeout(() => {
+    notification.remove();
+  }, 1000);
+}
+
+
+export {loginPage,loginHundler,showNotification}
